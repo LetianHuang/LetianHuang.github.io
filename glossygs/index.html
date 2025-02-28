@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting">
+  <meta name="keywords" content="GlossyGS, Inverse Rendering, 3DGS">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/image-compare-viewer.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/glossygs-icon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/image-compare-viewer.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting</h1>
+          <h1 style="font-size:1.5rem; color:#6e6e6e; font-weight: 550;"> TVCG 2025 <br> (IEEE Transactions on Visualization and Computer Graphics) </br> </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://dblp.org/pid/299/0918.html"> Shuichang Lai </a> <sup> * 1</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://letianhuang.github.io/"> Letian Huang </a> <sup> * 2</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en"> Jie Guo </a> <sup> ✝ 2</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=LeDSFrAAAAAJ&hl=en"> Kai Cheng </a> <sup> 3</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://o0helloworld0o-ustc.github.io/"> Bowen Pan </a> <sup> 1</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://www.xxlong.site/"> Xiaoxiao Long </a> <sup> 4</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=g5XimOcAAAAJ&hl=en"> Jiangjing Lyu </a> <sup> 1</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://openreview.net/profile?id=~chengfei_lv1"> Chengfei Lv </a> <sup> 1</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+            <span class="author-block">
+              <a href="https://cs.nju.edu.cn/ywguo/index.htm"> Yanwen Guo </a> <sup> 2</sup>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <sup>*</sup>
+              Denotes equal contribution
+              </span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="author-block">
+                                <sup>✝</sup>
+                Corresponding author
+                </span>
+          </div>
+
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Tao Technology Department, Alibaba Group</span> 
+            <!-- Tao Technology Department,  -->
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>State Key Lab for Novel Software Technology, Nanjing University</span>
+            <!-- State Key Lab for Novel Software Technology,  -->
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>3</sup>School of artificial intelligence and data science, University of Science and Technology of China</span>
+            <!-- School of artificial intelligence and data science,  -->
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>4</sup>Department of Computer Science, The University of Hong Kong</span>
+            <!-- Department of Computer Science,  -->
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <sup>1</sup>
+            <a href="https://www.alibabagroup.com/">
+              <img style="width: 20%; padding-right: 15px;" src="static/images/alibaba_group.png">
+            </a>
+            <sup>2</sup>
+            <a href="https://www.nju.edu.cn/">
+              <img style="width: 20%; padding-right: 15px;" src="static/images/nju.png">
+            </a>
+            <br>
+            <sup>3</sup>
+            <a href="https://www.ustc.edu.cn/">
+              <img style="width: 30%; padding-right: 15px;" src="static/images/ustc.svg">
+            </a>
+            <sup>4</sup>
+            <a href="https://hku.hk/">
+              <img style="width: 30%; padding-right: 15px;" src="https://hku.hk/assets/img/hku-logo.svg?t=1678891777">
+            </a>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2410.13349"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2410.13349"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/DekuLiuTesla/CityGaussian"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span> -->
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-three-fifths">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/horse/horse_rot-bridge.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/horseours.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/angel_ours.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/tbell_ours.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/qilin.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-rubble">
+          <video poster="" id="rubble" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/qilin/qilinedit_envrot4_corridor_r0_wbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-building">
+          <video poster="" id="building" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/qilin/qilinedit_envrot4_bridge_wbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/horse/horse_rot-corridor-r0m0.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <!-- <div class="item item-matrixcity">
+          <video poster="" id="matrixcity" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/qilin/qilinedit_envrot4_bridge_r1_wbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-residence">
+          <video poster="" id="residence" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/qilin/qilinedit_envrot4_corridor_r1_wbg.mp4"
+                    type="video/mp4">
+          </video>
+        </div> -->
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/horse/horse_rot-bridge-r1m0.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/edit/horse/horse_rot-corridor-r1m0.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/car_ours.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-sciart">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/ours/ball_ours.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Reconstructing objects from posed images is a
+            crucial and complex task in computer graphics and computer
+            vision. While NeRF-based neural reconstruction methods have
+            exhibited impressive reconstruction ability, they tend to be
+            time-comsuming. Recent strategies have adopted 3D Gaussian
+            Splatting (3D-GS) for inverse rendering, which have led to quick
+            and effective outcomes. However, these techniques generally have
+            difficulty in producing believable geometries and materials for
+            glossy objects, a challenge that stems from the inherent ambiguities of inverse rendering. To address this, we introduce GlossyGS,
+            an innovative 3D-GS-based inverse rendering framework that
+            aims to precisely reconstruct the geometry and materials of
+            glossy objects by integrating material priors. The key idea is the
+            use of micro-facet geometry segmentation prior, which helps to
+            reduce the intrinsic ambiguities and improve the decomposition
+            of geometries and materials. Additionally, we introduce a normal
+            map prefiltering strategy to more accurately simulate the normal
+            distribution of reflective surfaces. These strategies are integrated
+            into a hybrid geometry and material representation that employs
+            both explicit and implicit methods to depict glossy objects.
+            We demonstrate through quantitative analysis and qualitative
+            visualization that the proposed method is effective to reconstruct
+            high-fidelity geometries and materials of glossy objects, and
+            performs favorably against state-of-the-arts.
+            
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="content has-text-justified">
+          <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/glossygs.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-three-fifths">
+      <h2 class="title is-3">Pipeline</h2>
+      <div class="content has-text-justified">
+        <p>
+          Illustration of the inverse rendering pipeline for our <b>GlossyGS</b>. The initial points are used to generate anchors, which carry the macroscopic features. These features are fed to GS decoder and material encoder, generating neural 3D Gaussians and neural materials (BRDF). Normal map prefiltering is used as a prefilter for these neural Gaussians and materials to obtain the corresponding material maps. The final rendering is shading of these maps and differentiable environment lighting, supervised by ground-truth images and micro-facet geometry segmentation prior.
+        </p>
+      </div>
+      <img alt="Architecture" src="./static/images/pipeline.png" width="100%"/>
+      
+      <h2 class="title is-3"><br><br><br>Motivation</h2>
+      <div class="columns is-centered">
+
+
+        <div class="column">
+          <h2 class="title is-5">Normal Map Filtering</h2>
+          <div class="columns is-centered">
+            <div class="column content">
+              <p>
+                The diffuse color is linear in the normal. The alpha-blending in 3D-GS is a linear operation. For diffuse objects, the order of alpha-blending and shading has little effect on the final color. However, specular reflection does not satisfy this linear relationship. The two aforementioned orders differ when the shading function is nonlinear in the normal.
+              </p>
+              <img src="./static/images/motivation_normalmapfiltering.png" width="100%"/>
+              <!-- <video id="video_10m_short" autoplay controls muted loop playsinline height="100%">
+                <source src="./static/videos/video_10m_short.mp4"
+                        type="video/mp4">
+              </video> -->
+            </div>
+  
+          </div>
+        </div>
+  
+        <div class="column">
+          <div class="content">
+            <h2 class="title is-5">Micro-facet Geometry Segmentation Prior</h2>
+            <p>
+              The success of the micro-facet model relies on the ability of the microscopic normal distribution to produce visual effects similar to the macroscopic normal. However, achieving these similar visual effects presents challenges for inverse rendering tasks. A low-frequency macroscopic normal distribution with a large roughness (a) and a high-frequency macroscopic normal distribution with a small roughness (b) can model the same glossy appearance. This leads to different roughness-normal pairs for the individual object. 
+            </p>
+            <img src="./static/images/motivation_micro.png" width="100%"/>
+            <!-- <video id="video_10m" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/video_10m.mp4"
+                      type="video/mp4">
+            </video> -->
+          </div>
+        </div>
+  
+        
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Comparisons of normal reconstruction</h2>
+    <div class="content has-text-justified">
+      <p>
+
+      </p>
+    </div>
+    <div class="columns is-centered">
+      <!-- Visual Effects. -->
+      <div class="column">
+        <div class="content">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/buchong/qilinout/nero_normal_00005.png" alt="" />
+                <img src="static/images/exp/buchong/qilinout/00004_ours.png" alt="" />
+              </div>
+  
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/buchong/b795out/00000_nmf.png" alt="" />
+                <img src="static/images/exp/buchong/b795out/00000_ours.png" alt="" />
+              </div>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/normalcompare/luyu/gsir_normal_00005.png" alt="" />
+                <img src="static/images/exp/normalcompare/luyu/ours_normal_00005.png" alt="" />
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+           
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/dtu/53brass/00053_gshader.png" alt="" />
+              <img src="static/images/exp/dtu/53brass/ours-00053.png" alt="" />
+            </div>
+
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/normalcompare/angel/tensosdf-index-0-normal.png" alt="" />
+              <img src="static/images/exp/normalcompare/angel/ours_normal_00000.png" alt="" />
+            </div>
+            
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/normalcompare/car_wtensosdf/gt_normal_00120.png" alt="" />
+              <img src="static/images/exp/normalcompare/car_wtensosdf/ours_normal_00120.png" alt="" />
+            </div>
+
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Comparisons of the estimated environment maps</h2>
+    <div class="content has-text-justified">
+      <p>
+      </p>
+    </div>
+    <div class="columns is-centered">
+      <!-- Visual Effects. -->
+      <div class="column">
+        <div class="content">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+
+              <img src="static/images/exp/envmap/gt_teapot.png"/>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/gshader_teapot.jpg" alt="" />
+                <img src="static/images/exp/envmap/teapot_light.jpeg" alt="" />
+              </div>
+  
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/teapot_gsirenvmap.png" alt="" />
+                <img src="static/images/exp/envmap/teapot_light.jpeg" alt="" />
+              </div>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/teapot_gt.jpeg" alt="" />
+                <img src="static/images/exp/envmap/teapot_light.jpeg" alt="" />
+              </div>
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <div class="column">
+        <div class="content">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+
+              <img src="static/images/exp/envmap/gt_angel.png"/>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/gshader_angel.png" alt="" />
+                <img src="static/images/exp/envmap/angel_light.jpeg" alt="" />
+              </div>
+  
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/angel_gsir.png" alt="" />
+                <img src="static/images/exp/envmap/angel_light.jpeg" alt="" />
+              </div>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/envmap/angel_gt.jpeg" alt="" />
+                <img src="static/images/exp/envmap/angel_light.jpeg" alt="" />
+              </div>
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Comparisons of relighting results</h2>
+    <div class="content has-text-justified">
+      <p>
+
+      </p>
+    </div>
+    <div class="columns is-centered">
+      <!-- Visual Effects. -->
+      <div class="column">
+        <div class="content">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/relight/teapot/crop/nero_pred_00003.png" alt="" />
+                <img src="static/images/exp/relight/teapot/crop/ours_pred_00003.png" alt="" />
+              </div>
+  
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/relight/horse2/nmf_pred_00000.png" alt="" />
+                <img src="static/images/exp/relight/horse2/ours_pred_00000.png" alt="" />
+              </div>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/relight/luyu/gsir_pred_00021.png" alt="" />
+                <img src="static/images/exp/relight/luyu/ours_pred_00021.png" alt="" />
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+           
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/relight/grogu/gshader_pred_00015.png" alt="" />
+              <img src="static/images/exp/relight/grogu/ours_pred_00015.png" alt="" />
+            </div>
+
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/relight/angel/angel_tensosdf_1_crop.png" alt="" />
+              <img src="static/images/exp/relight/angel/ours_pred_00017.png" alt="" />
+            </div>
+            
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/relight/horse2/gt_00000.png" alt="" />
+              <img src="static/images/exp/relight/horse2/ours_pred_00000.png" alt="" />
+            </div>
+
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Comparisons of novel view synthesis</h2>
+    <div class="content has-text-justified">
+      <p>
+
+      </p>
+    </div>
+    <div class="columns is-centered">
+      <!-- Visual Effects. -->
+      <div class="column">
+        <div class="content">
+          <div class="columns is-centered">
+            <div class="column is-full-width">
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/nvs/tbell/nero_pred_00003.png" alt="" />
+                <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+              </div>
+  
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/nvs/tbell/nmf_00003.png" alt="" />
+                <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+              </div>
+
+              <div class="image-compare shadow-md rounded mb-16">
+                <img src="static/images/exp/nvs/tbell/gsir_00003.png" alt="" />
+                <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+           
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/nvs/tbell/gshader_00003.png" alt="" />
+              <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+            </div>
+
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/nvs/tbell/tbell_tensosdf_pred_00003.png" alt="" />
+              <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+            </div>
+            
+            <div class="image-compare shadow-md rounded mb-16">
+              <img src="static/images/exp/nvs/tbell/gt_00003.png" alt="" />
+              <img src="static/images/exp/nvs/tbell/ours_pred_00003.png" alt="" />
+            </div>
+
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{lai2024glossygsinverserenderingglossy,
+      title={GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting}, 
+      author={Shuichang Lai and Letian Huang and Jie Guo and Kai Cheng and Bowen Pan and Xiaoxiao Long and Jiangjing Lyu and Chengfei Lv and Yanwen Guo},
+      year={2024},
+      eprint={2410.13349},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2410.13349}, 
+}</code></pre>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">References</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            [Kerbl et al. 2023] Bernhard Kerbl, Georgios Kopanas, Thomas Leimkühler, George Drettakis. 3D Gaussian Splatting for Real-Time Radiance Field Rendering. ACM Transactions on Graphics (SIGGRAPH Conference Proceedings) 42, 4 (July 2023).
+          </p>
+          <p>
+            [Jiang et al. 2024] Yingwenqi Jiang, Jiadong Tu, Yuan Liu, Xifeng Gao, Xiaoxiao Long, Wenping Wang, and Yuexin Ma. GaussianShader: 3D Gaussian Splatting with Shading Functions for Reflective Surfaces. in Proceedings of the IEEE/CVF Conference on Computer
+            Vision and Pattern Recognition (CVPR), 2024, pp. 5322-5332.
+          </p>
+          <p>
+            [Liang et al. 2024] Zhihao Liang, Qi Zhang, Ying Feng, Ying Shan, Kui Jia. in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2024, pp. 21644-21653.
+          </p>
+          <p>
+            [Mai et al. 2023] Alexander Mai, Dor Verbin, Falko Kuester, Sara Fridovich-Keil. Neural Microfacet Fields for Inverse Rendering. in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV), 2023, pp. 408-418.
+          </p>
+          <p>
+            [Li et al. 2024] Jia Li, Lu Wang, Lei Zhang, Beibei Wang. TensoSDF: Roughness-aware Tensorial Representation for Robust Geometry and Material Reconstruction. ACM Transactions on Graphics (SIGGRAPH Conference Proceedings) 43, 4 (July 2024).
+          </p>
+          <p>
+            [Liu et al. 2023] Yuan Liu, Peng Wang, Cheng Lin, Xiaoxiao Long, Jiepeng Wang, Lingjie Liu, Taku Komura, Wenping Wang. NeRO: Neural Geometry and BRDF Reconstruction of Reflective Objects from Multiview Images. ACM Transactions on Graphics (SIGGRAPH Conference Proceedings) 42, 4 (July 2023).
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Concurrent Work. -->
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="http://www-sop.inria.fr/reves/Basilic/2021/KPLD21/">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="#top" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the template of this website. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  let imageCompareViewers = document.querySelectorAll(".image-compare");
+  let configs = [
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NeRO [Liu et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NMF [Mai et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'GSIR [Liang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Gshader [Jiang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'TensoSDF [Li et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Ground-truth',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Gshader [Jiang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'GSIR [Liang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Ground-truth',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Gshader [Jiang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'GSIR [Liang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Ground-truth',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NeRO [Liu et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NMF [Mai et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'GSIR [Liang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Gshader [Jiang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'TensoSDF [Li et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Ground-truth',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NeRO [Liu et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'NMF [Mai et al. 2023]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'GSIR [Liang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Gshader [Jiang et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'TensoSDF [Li et al. 2024]',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  { 
+    addCircle: true, 
+    verticalMode: false, 
+    hoverStart: true,
+    showLabels: true,
+    labelOptions: {
+      before: 'Ground-truth',  
+      after: 'Ours',
+      onHover: false
+    },
+  },
+  ];
+  
+  imageCompareViewers.forEach((element, i) => {
+      new ImageCompare(element, configs[i]).mount();
+    });
+</script>
+
+</body>
+</html>
