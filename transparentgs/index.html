@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="3D Gaussian Splatting for Real-Time Radiance Field Rendering">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="GNu68NbqJUZfuiEzwKsL3XQUvm4ld16m3Hz1ixNFbJ0" />
+
+  <title>TransparentGS: Fast Inverse Rendering of Transparent Objects with Gaussians</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/transparentgs-icon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://letianhuang.github.io/transparentgs/">
+          <span class="icon">
+            <i class="fas fa-home"></i>
+          </span>
+        </a>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://letianhuang.github.io/glossygs/">
+              GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting
+            </a>
+            <a class="navbar-item" href="https://letianhuang.github.io/op43dgs/">
+              On the Error Analysis of 3D Gaussian Splatting and an Optimal Projection Strategy
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <style>
+    .bg-box {
+      position: relative;
+      height: 950px;
+    }
+
+    .bg-box::before {
+      content: "";
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      background-image: url('./static/images/transparent_teaser.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center 60%;
+      opacity: 0.3;
+    }
+
+    /* .hero-body p {
+    position: relative;
+    z-index: 1;
+    color: white;
+    object-fit: cover;
+  } */
+  </style>
+
+  <section class="hero">
+    <div class="hero-body bg-box">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <br><br><br><br><br>
+            <h1 class="title is-1 publication-title">TransparentGS: Fast Inverse Rendering of <br> Transparent
+              Objects with Gaussians</h1>
+            <h1 style="font-size:1.5rem"> <b>SIGGRAPH 2025<br>(ACM Transactions on Graphics) <br> </b></h1>
+            <br>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://letianhuang.github.io/">Letian Huang</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://orcid.org/0009-0004-8637-4384">Dongwei
+                  Ye</a><sup>1</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="author-block">
+                <a href="https://orcid.org/0009-0007-2228-4648">Jialin Dan</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://orcid.org/0000-0002-0736-7951">Chengzhi
+                  Tao</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://orcid.org/0009-0005-6423-4812">Huiwen Liu</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <br>
+              <span class="author-block">
+                <a href="http://kunzhou.net/">Kun Zhou</a><sup>3,4</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="http://ren-bo.net/">Bo Ren</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="http://www.njumeta.com/liyq/">Yuanqi Li</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://cs.nju.edu.cn/ywguo/index.htm">Yanwen Guo</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en">Jie Guo</a><sup>✝
+                  1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
+
+
+            <div class="is-size-5 publication-authors">
+              <sup>✝</sup> Corresponding author
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>State Key Lab for Novel Software Technology, Nanjing
+                University</span><br>
+              <span class="author-block"><sup>2</sup>TMCC, College of Computer Science, Nankai University</span><br>
+              <span class="author-block"><sup>3</sup>State Key Lab of CAD & CG, Zhejiang University</span><br>
+              <span class="author-block"><sup>4</sup>Institute of Hangzhou Holographic Intelligent Technology</span>
+            </div>
+
+            <br><br>
+            <div class="is-size-5 publication-authors">
+              <sup>1</sup> <a href="https://www.nju.edu.cn/en/"><img style="width:15%; padding-right: 15px;"
+                  src="static/images/nju.png"> </a>
+              <sup>2</sup> <a href="https://en.nankai.edu.cn/"><img style="width:15%; padding-right: 15px;"
+                  src="static/images/nankai.png"> </a>
+              <sup>3</sup> <a href="https://www.zju.edu.cn/english/"><img style="width:18%; padding-right: 15px;"
+                  src="static/images/zju.svg"> </a>
+              <sup>4</sup> <a href="http://www.cad.zju.edu.cn/kechuangpingtai"><img
+                  style="width:20%; padding-right: 15px;" src="static/images/zju_cadcg.png"> </a>
+            </div>
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper - Coming soon</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>ArXiv - Coming soon</span>
+                  </a>
+                </span>
+
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>Author's Version - Coming soon</span>
+                  </a>
+                </span>
+
+                <br>
+                
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                    </span>
+                    <span>Video - Coming soon</span>
+                  </a>
+                </span>
+
+
+
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-powerpoint"></i>
+                    </span>
+                    <span>Slides - Coming soon</span>
+                  </a>
+                </span>
+
+
+
+              <!-- <span class="link-block">
+                <a href="https://letianhuang.github.io/transparentgs/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code - Coming soon</span>
+                  </a>
+              </span> -->
+
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/transparentgs/"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="far fa-images"></i>
+                    </span>
+                    <span>Data - Coming soon</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+
+            <!-- <div class="is-size-5 publication-authors">
+            <a href="https://team.inria.fr/graphdeco/"> <img style="width:100%; padding-right: 15px;" src="./static/images/exp/transparent_teaser.jpeg"></a>
+          </div> -->
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--
+<section class="hero teaser">
+  <div class="container">
+    <div class="hero-body">
+      <img src="content/images/CatacausticGeometry.svg">
+      <h2 class="subtitle has-text-centered">
+        The geometry of catacaustics: <i>(a)</i> In the case of a planar reflector, a reflected point <b>P</b> results in a static virtual point <b>p</b>, independent of camera position <b>c</b>. <i>(b)</i> For curved reflectors (here a convex example), camera motion leads to <b>p</b> tracing a surface, called catacaustic. <i>(c)</i> The catacaustic for a single point <b>P</b> is defined by the envelope of virtual reflected rays, depicted as the bold orange curve, which at each point is tangent to one of the virtual reflected rays. Virtual images of <b>P</b> are formed only on the catacaustic trajectory. <i>(d)</i> In a point-based rendering setup, where the tangent constraint is not satisfied, the trajectory of virtual points is not unique. An infinite number of trajectories (three examples are shown) lead to the same apparent reflection. Reflection rays are omitted for clarity.
+      </h2>
+    </div>
+  </div>
+</section>
+-->
+
+  <section class="hero is-light is-small">
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div class="item item-dolphin_bicycle">
+            <video poster="" id="dolphin_bicycle" autoplay controls muted loop height="100%">
+              <source src="./static/videos/dolphin_bicycle.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-teaser_video">
+            <video poster="" id="teaser_video" autoplay controls muted loop height="100%">
+              <source src="./static/videos/teaser_video.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-penguin_stump">
+            <video poster="" id="penguin_stump" autoplay controls muted loop height="100%">
+              <source src="./static/videos/penguin_stump.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-bunny_drjohnson">
+            <video poster="" id="bunny_drjohnson" autoplay controls muted loop height="100%">
+              <source src="./static/videos/bunny_drjohnson.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-dog_bicycle">
+            <video poster="" id="dog_bicycle" autoplay controls muted loop height="100%">
+              <source src="./static/videos/dog_bicycle.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-dolphin_truck">
+            <video poster="" id="dolphin_truck" autoplay controls muted loop height="100%">
+              <source src="./static/videos/dolphin_truck.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-mouse_drjohnson">
+            <video poster="" id="mouse_drjohnson" autoplay controls muted loop height="100%">
+              <source src="./static/videos/mouse_drjohnson.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-playroom_fisheye">
+            <video poster="" id="playroom_fisheye" autoplay controls muted loop height="100%">
+              <source src="./static/videos/playroom_fisheye.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="item item-playroom_panorama">
+            <video poster="" id="playroom_panorama" autoplay controls muted loop height="100%">
+              <source src="./static/videos/playroom_panorama.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            The emergence of neural and Gaussian-based radiance field methods has led to considerable advancements in
+            novel view synthesis and 3D object reconstruction. Nonetheless, <b>specular reflection and refraction</b>
+            continue to pose significant challenges due to the instability and incorrect overfitting of radiance fields
+            to high-frequency light variations. Currently, even 3D Gaussian Splatting (3D-GS), as a powerful and
+            efficient tool, falls short in recovering transparent objects with nearby contents due to the existence of
+            apparent secondary ray effects. To address this issue, we propose TransparentGS, a fast inverse rendering
+            pipeline for transparent objects based on 3D-GS. The main contributions are three-fold. Firstly, an
+            efficient representation of transparent objects, transparent Gaussian primitives, is designed to enable
+            specular refraction through a deferred refraction strategy. Secondly, we leverage Gaussian light field
+            probes (GaussProbe) to encode <b>both ambient light and nearby contents in a unified framework</b>. Thirdly,
+            a depth-based iterative probes query (IterQuery) algorithm is proposed to <b>reduce the parallax errors</b>
+            in our probe-based framework. Experiments demonstrate the <b>speed and accuracy</b> of our approach in
+            recovering transparent objects from complex environments, as well as several <b>applications in computer
+              graphics and vision</b>.
+          </div>
+
+          <div class="content has-text-justified">
+            <b>Comparison of transparent object reconstruction methods </b>
+            in terms of training time (A), rendering time (B), and the capability of
+            supporting ambient light (C), nearby contents (indirect light) (D), highfrequency refraction details (E),
+            accurate reflection-refraction decoupling
+            (F), colored refraction (G), and re-rendering (e.g., relighting or material
+            editing [Khan et al. 2006]) (H).
+          </div>
+          <div class="columns is-centered">
+            <div class="column">
+              <div class="columns is-centered">
+                <div class="column content">
+                  <img src="./static/images/exp/comparison_methods.png" width=70%>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Video</h2>
+            <div class="publication-video">
+              <iframe src="https://www.youtube.com/embed/T_kXY43VZnk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div> -->
+          </div>
+        </div>
+      </div>
+  </section>
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Method</h2>
+      <div class="content has-text-justified">
+        <p>
+          The overview of our TransparentGS pipeline. Each 3D scene is firstly separated into transparent objects and
+          opaque environment using SAM2 [Ravi
+          et al. 2024] guided by GroundingDINO [Liu et al. 2024]. For transparent objects, we propose transparent
+          Gaussian primitives, which explicitly encode both
+          geometric and material properties within 3D Gaussians. And the properties are rasterized into maps for
+          subsequent deferred shading. For the opaque
+          environment, we recover it with the original 3D-GS, and bake it into GaussProbe surrounding the transparent
+          object. The GaussProbe are then queried
+          through our IterQuery algorithm to compute reflection and refraction.
+        </p>
+        <img src="./static/images/exp/pipeline.png">
+      </div>
+
+
+
+      <h3 class="title is-4">GaussProbe</h3>
+      <div class="content has-text-justified">
+        <p>Illustration of our baking pipeline for Gaussian light field probes. Given a set of environmental images with
+          the transparent object removed, we
+          can reconstruct the 3D scene using the original 3D-GS [Kerbl et al. 2023]. We voxelize the scene and place
+          virtual cameras around the bounding box of the
+          transparent object. For each virtual camera, we project the Gaussian primitives onto the tangent plane of the
+          unit sphere [Huang et al. 2024], generating tangent-plane Gaussians.
+          Finally, an 𝛼-blending pass bakes the 360° panoramic color and depth maps at each point, which are
+          subsequently stored in the voxels.
+        </p>
+        <img src="./static/images/exp/probes_bake.png">
+      </div>
+
+      <h3 class="title is-4">IterQuery</h3>
+      <div class="content has-text-justified">
+        <p>
+          To address the parallax issue inherent
+          to the probes and enhance the details of refraction/inter-reflection,
+          we design a depth-based iterative probes query algorithm (IterQuery)
+          which achieves plausible results only after a few iterations.
+        </p>
+        <img src="./static/images/exp/probes_query.png">
+        <video id="GaussProbe" autoplay controls muted loop height="100%">
+          <source src="./static/videos/GaussProbe.mp4" type="video/mp4">
+        </video>
+      </div>
+
+
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <!-- <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+            <img src="content/images/Artboard 22.png" alt="Graph for perfomance evaluation">
+          </div>
+        </div>
+      </div> -->
+    </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Results</h2>
+      <h3 class="title is-4">Inverse Rendering</h3>
+      <div class="content has-text-justified">
+      </div>
+      <div class="content has-text-justified">
+        <p>
+          3D scene segmentation results on the Glass scene. Top left:
+          Image segmentation results. Bottom left: Segmented scene represented
+          by the original 3D-GS [Kerbl et al. 2023]. Right: Probes baked from the
+          segmented scene.
+        </p>
+        <div style="display: flex; align-items: center;">
+          <img src="./static/images/exp/sam.png" alt="Graph for sam results" style="width: 45%; height: auto; margin-right: 10px;">
+          <video src="./static/videos/SAM.mp4" autoplay controls muted loop style="width: 55%; height: auto;"></video>
+        </div>
+      </div>
+      <div class="content has-text-justified">
+        <p>
+          Surface mesh reconstruction results of our method on the real-captured and synthetic datasets.
+        </p>
+        <img src="./static/images/exp/meshes.png" alt="Graph for meshes">
+      </div>
+      <div class="content has-text-justified">
+        <p>
+          Detailed intermediate results of our method. Left: the environment and the corresponding GaussProbe. Right:
+          maps of additional parameters.
+        </p>
+        <img src="./static/images/exp/intermediate.png" alt="Graph for maps">
+      </div>
+      <!-- <h3 class="title is-4">Comparisons</h3>
+      <div class="content has-text-justified">
+        <p>
+          Qualitative comparison of novel-view synthesis and inverse rendering results on real-captured scenes and
+          synthetic scenes.
+        </p>
+        <img src="./static/images/exp/comparison.png">
+        <img src="./static/images/exp/comparison_color.png">
+        <img src="./static/images/exp/comparison_synthetic.png">
+      </div> -->
+      <h3 class="title is-4">Applications</h3>
+      <div class="content has-text-justified">
+        <p>
+          Our method supports the rendering and navigation
+          of scenes that integrate triangle meshes, traditional 3D-GS and transparent Gaussian primitives, as well as
+          non-pinhole cameras.
+        </p>
+        <img src="./static/images/exp/applications.png">
+      </div>
+      <!--/ Visual Effects. -->
+
+      <!-- Matting. -->
+      <!-- <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+            <img src="content/images/Artboard 22.png" alt="Graph for perfomance evaluation">
+          </div>
+        </div>
+      </div> -->
+    </div>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Visual Comparisons</h2>
+      <div class="content has-text-justified">
+        <p>
+
+        </p>
+      </div>
+      <div class="columns is-centered">
+        <!-- Visual Effects. -->
+        <div class="column">
+          <div class="content">
+            <div class="columns is-centered">
+              <div class="column is-full-width">
+                <div id="example1" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/ours_glass_refl.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours <br> Reflection
+                    </div>
+                  </div>
+  
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/nunerf_glass_refl.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        NU-NeRF [Sun et al. 2024] <br> Reflection
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+
+                <div id="example2" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/ours_mouse_refr.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours <br> Refraction
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/nunerf_mouse_refr.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        NU-NeRF [Sun et al. 2024] <br> Refraction
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--/ Visual Effects. -->
+
+        <!-- Matting. -->
+        <div class="column">
+          <div class="columns is-centered">
+            <div class="column content">
+
+              <div id="example4" class="bal-container-small">
+                <div class="bal-after">
+                  <img src="./static/images/exp/vis_cmp/ours_penguin_normal.png">
+                  <div class="bal-afterPosition afterLabel">
+                    Ours <br> Normal
+                  </div>
+                </div>
+
+                <div class="bal-before">
+                  <div class="bal-before-inset">
+                    <img src="./static/images/exp/vis_cmp/gshader_penguin_normal.png">
+                    <div class="bal-beforePosition beforeLabel">
+                      GShader [Jiang et al. 2024] <br> Normal
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bal-handle">
+                  <span class=" handle-left-arrow"></span>
+                  <span class="handle-right-arrow"></span>
+                </div>
+
+              </div>
+
+              <div id="example5" class="bal-container-small">
+
+                <div class="bal-after">
+                  <img src="./static/images/exp/vis_cmp/ours_bird_render.png">
+                  <div class="bal-afterPosition afterLabel">
+                    Ours <br> Rendering
+                  </div>
+                </div>
+
+                <div class="bal-before">
+                  <div class="bal-before-inset">
+                    <img src="./static/images/exp/vis_cmp/nunerf_bird_render.png">
+                    <div class="bal-beforePosition beforeLabel">
+                      NU-NeRF [Sun et al. 2024] <br> Rendering
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bal-handle">
+                  <span class=" handle-left-arrow"></span>
+                  <span class="handle-right-arrow"></span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{transparentgs,
+  author={Huang, Letian and Ye, Dongwei and Dan, Jialin and Tao, Chengzhi and Liu, Huiwen and Zhou, Kun and Ren, Bo and Li, Yuanqi and Guo, Yanwen and Guo, Jie},
+  journal={ACM Transactions on Graphics}, 
+  title={TransparentGS: Fast Inverse Rendering of Transparent Objects with Gaussians}, 
+  year={2025}
+}</code></pre>
+      <!--
+    <pre><code>@article{kopanas2022neural,
+      title={Neural Point Catacaustics for Novel-View Synthesis of Reflections},
+      author={Kopanas, Georgios and Leimk{\"u}hler, Thomas and Rainer, Gilles and Jambon, Cl{\'e}ment and Drettakis, George},
+      journal={ACM Transactions on Graphics},
+      volume={41},
+      number={6},
+      pages={Article--201},
+      year={2022}
+    }</code></pre>-->
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Acknowledgments and Funding</h2>
+      <p>
+        The authors would like to thank the anonymous reviewers for their
+        valuable feedback. This work was supported by the National Natural
+        Science Foundation of China (No. 61972194 and No. 62032011) and
+        the Natural Science Foundation of Jiangsu Province (No. BK20211147).
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">References</h2>
+
+          <div class="content has-text-justified">
+            <ul>
+              <li>
+                <a href="https://eikonalfield.mpi-inf.mpg.de/" target="_blank">[Bemana et al. 2022] Eikonal Fields for Refractive Novel-View Synthesis. SIGGRAPH 2022</a>
+              </li>
+              <li>
+                <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank">[Kerbl et al. 2023] 3D Gaussian Splatting for Real-Time Radiance Field Rendering. SIGGRAPH 2023 (ACM Transactions on Graphics)</a>
+              </li>
+              <li>
+                <a href="https://ivrl.github.io/NEMTO/" target="_blank">[Wang et al. 2023] NEMTO: Neural Environment Matting for Novel View and Relighting Synthesis of Transparent Objects. ICCV 2023</a>
+              </li>
+              <li>
+                <a href="https://segment-anything.com/" target="_blank">[Kirillov et al. 2023] Segment Anything. ICCV 2023</a>
+              </li>
+              <li>
+                <a href="https://arkgao.github.io/TransReconProjectWeb/" target="_blank">[Gao et al. 2023] Transparent Object Reconstruction via Implicit Differentiable Refraction Rendering. SIGGRAPH Asia 2023</a>
+              </li>
+              <li>
+                <a href="https://asparagus15.github.io/GaussianShader.github.io/" target="_blank">[Jiang et al. 2024] GaussianShader: 3D Gaussian Splatting with Shading Functions for Reflective Surfaces. CVPR 2024</a>
+              </li>
+              <li>
+                <a href="https://github.com/IDEA-Research/GroundingDINO/" target="_blank">[Liu et al. 2024] Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection. ECCV 2024</a>
+              </li>
+              <li>
+                <a href="https://letianhuang.github.io/op43dgs/" target="_blank">[Huang et al. 2024] On the Error Analysis of 3D Gaussian Splatting and an Optimal Projection Strategy. ECCV 2024</a>
+              </li>
+              <li>
+                <a href="https://gaussiantracer.github.io/" target="_blank">[Moenne-Loccoz et al. 2024] 3D Gaussian Ray Tracing: Fast Tracing of Particle Scenes. SIGGRAPH Asia 2024 (ACM Transactions on Graphics)</a>
+              </li>
+              <li>
+                <a href="http://geometrylearning.com/NU-NeRF/" target="_blank">[Sun et al. 2024] NU-NeRF: Neural Reconstruction of Nested Transparent Objects with Uncontrolled Capture Environment. SIGGRAPH Asia 2024 (ACM Transactions on Graphics)</a>
+              </li>
+              <li>
+                <a href="https://ai.meta.com/sam2/" target="_blank">[Ravi et al. 2024] SAM 2: Segment Anything in Images and Videos. arXiv 2024</a>
+              </li>
+              <li>
+                <a href="https://letianhuang.github.io/glossygs/" target="_blank">[Lai et al. 2025] GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting. TVCG 2025</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!--/ Concurrent Work. -->
+    </div>
+  </section>
+
+
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="http://www-sop.inria.fr/reves/Basilic/2021/KPLD21/">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="#top" class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the
+              template of this website.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/js/script.js"></script>
+
+  <script>
+    new BeforeAfter({
+      id: '#example1'
+    });
+    new BeforeAfter({
+      id: '#example2'
+    });
+    new BeforeAfter({
+      id: '#example4'
+    });
+    new BeforeAfter({
+      id: '#example5'
+    });
+
+  </script>
+
+</body>
+
+</html>
