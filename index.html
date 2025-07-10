@@ -508,6 +508,172 @@
                                     <!-- </div>  -->
                                 </div>
 
+
+
+                                <div class="col-sm-3 preview">
+                                    <figure>
+                                        <picture>
+                                            <p style="height:150%"><br></p>
+                                            <!-- <abbr class="badge"><a href="https://cvpr.thecvf.com/Conferences/2024" rel="external nofollow noopener" target="_blank">CVPR</a></abbr>  -->
+                                            <img src="https://github.com/LeoDarcy/360GS/blob/main/asset/teaser.png" data-zoomable
+                                                class="img-fluid z-depth-1 rounded" width="100%" height="auto"
+                                                alt="360-GS"
+                                                onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+                                        </picture>
+                                    </figure>
+                                </div>
+                                <div id="360_gs" class="col-sm-9">
+                                    <div class="title"><strong>360-GS: Layout-guided Panoramic Gaussian Splatting For Indoor Roaming</strong></div>
+                                    <div class="author">
+                                        <a href="https://scholar.google.com/citations?user=VmPQ6akAAAAJ"
+                                            rel="external nofollow noopener" target="_blank">Jiayang Bai</a>,
+                                        <strong>Letian Huang</strong>,
+                                        <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en"
+                                            rel="external nofollow noopener" target="_blank">Jie Guo<sup>✝</sup></a>,
+                                        <a href="https://www.njumeta.com/" rel="external nofollow noopener"
+                                            target="_blank">Wen Gong,</a>
+                                        <a href="http://www.njumeta.com/liyq/" rel="external nofollow noopener"
+                                            target="_blank">Yuanqi Li,</a>
+                                        <a href="https://cs.nju.edu.cn/ywguo/index.htm" rel="external nofollow noopener"
+                                            target="_blank">Yanwen Guo</a>,
+                                    </div>
+                                    <!-- <div class="periodical"> -->
+                                    <!-- https://shamerkill.github.io/article/6b4cacf8.html -->
+                                    <!-- <img class="emoji" title=":trophy:" alt=":trophy:" src="https://github.githubassets.com/images/icons/emoji/trophy.png" height="15" width="15"> Test.
+                                            </div> -->
+                                    <div class="periodical"> <em>International Conference on 3D Vision (3DV), 2025</em>  </div>
+                                    <div class="periodical"> </div>
+                                    <div class="links">
+                                        <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+                                        <a class="bibtex btn btn-sm z-depth-0" role="button">Bib</a>
+                                        <a href="https://openreview.net/forum?id=PyCoMnd5P4" rel="external nofollow noopener" target="_blank" class="btn btn-sm z-depth-0" role="button">PDF</a>
+                                        <a href=https://arxiv.org/abs/2402.00763><img
+                                                src='https://img.shields.io/badge/arXiv-2402.00763-b31b1b.svg'></a>
+                                        <a href='https://github.com/LeoDarcy/360GS'><img
+                                                src='https://img.shields.io/github/stars/LeoDarcy/360GS?style=social'></a>
+                                        <!-- <a href="http://lidar-net.njumeta.com/" rel="external nofollow noopener" target="_blank" class="btn btn-sm z-depth-0" role="button">Dataset</a>  -->
+                                        <!-- <a href="#" rel="external nofollow noopener" target="_blank" class="btn btn-sm z-depth-0" role="button">Video</a>  -->
+                                    </div>
+                                    <div class="bibtex hidden">
+                                        <figure class="highlight">
+                                            <pre>
+                                                    <code class="language-bibtex" data-lang="bibtex">
+@inproceedings{
+    bai2025gs,
+    title={360-{GS}: Layout-guided Panoramic Gaussian Splatting For Indoor Roaming},
+    author={Jiayang Bai and Letian Huang and Jie Guo and Wen Gong and Yuanqi Li and Yanwen Guo},
+    booktitle={International Conference on 3D Vision 2025},
+    year={2025},
+    url={https://openreview.net/forum?id=PyCoMnd5P4}
+}
+</code></pre>
+                                        </figure>
+                                    </div>
+                                    <div class="abstract hidden">
+                                        <p>3D Gaussian Splatting (3D-GS) has recently attracted great attention with real-time and photo-realistic renderings. 
+                                            This technique typically takes perspective images as input and optimizes a set of 3D elliptical Gaussians by splatting them onto the image planes, 
+                                            resulting in 2D Gaussians. However, applying 3D-GS to panoramic inputs presents challenges in effectively modeling the projection onto the spherical surface of ${360^\circ}$ images using 2D Gaussians. 
+                                            In practical applications, input panoramas are often sparse, leading to unreliable initialization of 3D Gaussians and subsequent degradation of 3D-GS quality. 
+                                            In addition, due to the under-constrained geometry of texture-less planes (e.g., walls and floors), 3D-GS struggles to model these flat regions with elliptical Gaussians, 
+                                            resulting in significant floaters in novel views. To address these issues, we propose 360-GS, a novel layout-guided $360^{\circ}$ Gaussian splatting for a limited set of panoramic inputs. 
+                                            Instead of splatting 3D Gaussians directly onto the spherical surface, 360-GS projects them onto the tangent plane of the unit sphere and then maps them to the spherical projections. 
+                                            This adaptation enables the representation of the projection using Gaussians. 
+                                            We guide the optimization of 3D Gaussians by exploiting layout priors within panoramas, which are simple to obtain and contain strong structural information about the indoor scene. 
+                                            Our experimental results demonstrate that 360-GS allows panoramic rendering and outperforms state-of-the-art methods with fewer artifacts in novel view synthesis, 
+                                            thus providing immersive roaming in indoor scenarios.</p>
+                                    </div>
+                                    <!-- <div class="badges">  -->
+                                    <!-- https://badge-docs.altmetric.com/getting-started.html -->
+                                    <!-- <span class="altmetric-embed" data-hide-no-mentions="true" data-hide-less-than="15" data-badge-type="2" data-badge-popover="right" data-doi="10.48550/arXiv.2403.02561"></span>  -->
+                                    <!-- https://badges.dimensions.ai/ -->
+                                    <!-- <span class="__dimensions_badge_embed__" data-doi="10.48550/arXiv.2403.02561" data-hide-zero-citations="true" data-style="small_rectangle" data-legend="hover-right" style="margin-bottom: 3px;"></span>  -->
+                                    <!-- <a href="https://github.com/letianhuang/letianhuang.github.io" rel="external nofollow noopener" target="_blank"><img src="https://img.shields.io/github/stars/letianhuang/letianhuang.github.io?style=social&amp;label=Stars" alt=""></a> -->
+                                    <!-- </div>  -->
+                                </div>
+
+
+                                <!-- <div class="col-sm-3 preview">
+                                    <figure>
+                                        <picture>
+                                            <p style="height:150%"><br></p>
+                                            <img src="/assets/img/glossygs_teaser.png" data-zoomable
+                                                class="img-fluid z-depth-1 rounded" width="100%" height="auto"
+                                                alt="Tongue"
+                                                onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+                                        </picture>
+                                    </figure>
+                                </div> -->
+                                <div id="tongue" class="col-sm-9">
+                                    <div class="title"><strong>Development of a tongue image-based machine learning tool for the diagnosis of colorectal cancer: a prospective multicentre clinical cohort study</strong></div>
+                                    <div class="author">
+                                        Xiaohe Sun<sup>*</sup>,
+                                        <strong>Letian Huang<sup>*</sup></strong>,
+                                        Libo Qu<sup>*</sup>,
+                                        Cheng Chen,
+                                        Xing Zeng,
+                                        Zuojian Zhou<sup>✝</sup>,
+                                        Hongyan Li<sup>✝</sup>,
+                                        Jin Sun,
+                                        Xufeng Lang,
+                                        <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en"
+                                            rel="external nofollow noopener" target="_blank">Jie Guo<sup>✝</sup></a>,
+                                        Haibo Cheng<sup>✝</sup>,
+                                    </div>
+                                    <!-- <div class="periodical"> -->
+                                    <!-- https://shamerkill.github.io/article/6b4cacf8.html -->
+                                    <!-- <img class="emoji" title=":trophy:" alt=":trophy:" src="https://github.githubassets.com/images/icons/emoji/trophy.png" height="15" width="15"> Test.
+                                            </div> -->
+                                    <div class="periodical"> <em>IEEE Journal of Biomedical and Health Informatics (JBHI), 2025</em> </div>
+                                    <div class="periodical"> </div>
+                                    <div class="links">
+                                        <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+                                        <a class="bibtex btn btn-sm z-depth-0" role="button">Bib</a>
+                                        <a href='https://doi.org/10.1109/JBHI.2025.3585552'> <img
+                                                src='https://img.shields.io/badge/DOI-10.1109%2FJBHI.2025.3585552-blue'></a>
+                                    </div>
+                                    <div class="bibtex hidden">
+                                        <figure class="highlight">
+                                            <pre>
+                                                    <code class="language-bibtex" data-lang="bibtex">
+@ARTICLE{11066282,
+    author={Sun, Xiaohe and Huang, Letian and Qu, Libo and Chen, Cheng and Zeng, Xing and Zhou, Zuojian and Li, Hongyan and Sun, Jin and Lang, Xufeng and Guo, Jie and Cheng, Haibo},
+    journal={IEEE Journal of Biomedical and Health Informatics}, 
+    title={Development of a tongue image-based machine learning tool for the diagnosis of colorectal cancer: a prospective multicentre clinical cohort study}, 
+    year={2025},
+    volume={},
+    number={},
+    pages={1-15},
+    keywords={Tongue;Feature extraction;Medical diagnostic imaging;Cancer;Hospitals;Colorectal cancer;Bioinformatics;Support vector machines;Sun;Training;Artificial Intelligence;Tongue Diagnosis;Colorectal Cancer;Machine Learning;Diagnostic Model},
+    doi={10.1109/JBHI.2025.3585552}}                                                          
+</code></pre>
+                                        </figure>
+                                    </div>
+                                    <div class="abstract hidden">
+                                        <p>Colorectal cancer (CRC) remains a persistent major global health burden, with traditional diagnostic
+                                            methods like colonoscopy suffering from suboptimal patient compliance rates. This study develops an intelligent
+                                            diagnostic model based on tongue images to assist in CRC
+                                            diagnosis, leveraging the integrative potential of traditional
+                                            tongue diagnosis and modern machine learning. Between
+                                            June 2023 and July 2024, we collected and processed 1,389
+                                            tongue images from CRC patients and 1,543 from noncolorectal cancer (NCRC) participants. Our methodology
+                                            combines innovative image segmentation using the Segment Anything Model (SAM) with Grounding DINO, extracts
+                                            both hand-crafted features (color, texture, shape) and deep
+                                            learning features via Swin-Transformer, and employs feature fusion and selection techniques. The diagnostic model
+                                            achieves an accuracy of 87.93% (F1-score: 0.9072) in internal validation. In an independent external cohort of 119
+                                            CRC patients and 221 NCRC participants, it demonstrates
+                                            85.18% precision (recall: 85%, F1-score: 0.8507). This noninvasive, cost-effective approach demonstrates significant
+                                            potential as a complementary screening tool for CRC, particularly in regions with limited access to conventional
+                                            diagnostic resources.</p>
+                                    </div>
+                                    <!-- <div class="badges">  -->
+                                    <!-- https://badge-docs.altmetric.com/getting-started.html -->
+                                    <!-- <span class="altmetric-embed" data-hide-no-mentions="true" data-hide-less-than="15" data-badge-type="2" data-badge-popover="right" data-doi="10.48550/arXiv.2403.02561"></span>  -->
+                                    <!-- https://badges.dimensions.ai/ -->
+                                    <!-- <span class="__dimensions_badge_embed__" data-doi="10.48550/arXiv.2403.02561" data-hide-zero-citations="true" data-style="small_rectangle" data-legend="hover-right" style="margin-bottom: 3px;"></span>  -->
+                                    <!-- <a href="https://github.com/letianhuang/letianhuang.github.io" rel="external nofollow noopener" target="_blank"><img src="https://img.shields.io/github/stars/letianhuang/letianhuang.github.io?style=social&amp;label=Stars" alt=""></a> -->
+                                    <!-- </div>  -->
+                                </div>
+<!-- ending -->
                             </div>
                         </li>
                     </ol>
