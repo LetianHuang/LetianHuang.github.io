@@ -78,6 +78,30 @@
                 </h1>
                 <p class="desc" style="font-size: 20px;">
                     <b>M.S.</b> at NJU.
+                    <a href="mailto:lthuangg@gmail.com" target="_blank"><img src="/assets/img/email.svg" height="20" alt="email" title="email"></a>
+                    &nbsp;
+                    <a href="https://github.com/LetianHuang" target="_blank"><img src="/assets/img/github.svg" height="20" alt="github" title="github"></a>
+                    &nbsp;
+                    <a href="https://scholar.google.com/citations?user=ZFrewMgAAAAJ" target="_blank"><img src="/assets/img/google-scholar.svg" height="20" alt="google scholar" title="google scholar"></a>
+                    &nbsp;
+                    <a href="https://orcid.org/0009-0003-1454-7824" target="_blank"><img src="/assets/img/orcid.logo.icon.svg" height="20" alt="orcid" title="orcid"></a>
+                    &nbsp;
+                    <span onclick="copyTextToClipboard()">Email: <a style="color: rgb(181, 9, 172); cursor: pointer;"
+                            onmouseover="this.style.textDecoration='underline';"
+                            onmouseout="this.style.textDecoration='none'">lthuang@smail.nju.edu.cn</a> (Click to copy)
+                    </span>
+                    <script>
+                        function copyTextToClipboard() {
+                            var textToCopy = "lthuang@smail.nju.edu.cn";
+                            var tempInput = document.createElement("input");
+                            tempInput.value = textToCopy;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(tempInput);
+                            alert("Copied to clipboard: " + textToCopy);
+                        }
+                    </script>
                 </p>
                 <div class="profile float-right">
                     <figure>
@@ -117,28 +141,6 @@
                     <p>My research interests involve Graphics, 3D Vision and Computer Vision.</p>
                     <p>During my bachelor's program, I focus on the International Collegiate Programming Contest (ICPC).</p>
                     <p>During my master's program, I focus on the study of rendering/inverse rendering/3D reconstruction with NeRF/3DGS.</p>
-                        <a href="mailto:lthuangg@gmail.com" target="_blank"><img src="/assets/img/email.svg" height="20" alt="email" title="email"></a>
-                        &nbsp;
-                        <a href="https://github.com/LetianHuang" target="_blank"><img src="/assets/img/github.svg" height="20" alt="github" title="github"></a>
-                        &nbsp;
-                        <a href="https://scholar.google.com/citations?user=ZFrewMgAAAAJ" target="_blank"><img src="/assets/img/google-scholar.svg" height="20" alt="google scholar" title="google scholar"></a>
-                        &nbsp;
-                        <span onclick="copyTextToClipboard()">Email: <a style="color: rgb(181, 9, 172); cursor: pointer;"
-                                onmouseover="this.style.textDecoration='underline';"
-                                onmouseout="this.style.textDecoration='none'">lthuang@smail.nju.edu.cn</a> (Click to copy)
-                        </span>
-                        <script>
-                            function copyTextToClipboard() {
-                                var textToCopy = "lthuang@smail.nju.edu.cn";
-                                var tempInput = document.createElement("input");
-                                tempInput.value = textToCopy;
-                                document.body.appendChild(tempInput);
-                                tempInput.select();
-                                document.execCommand("copy");
-                                document.body.removeChild(tempInput);
-                                alert("Copied to clipboard: " + textToCopy);
-                            }
-                        </script>
                 </div>
 
                 <!-- <h2> <a href="/news/" style="color: inherit">news</a> </h2>  -->
