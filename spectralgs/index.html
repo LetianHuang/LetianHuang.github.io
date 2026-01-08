@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Spectral-GS: Taming 3D Gaussian Splatting with Spectral Entropy">
+  <meta name="keywords" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="GNu68NbqJUZfuiEzwKsL3XQUvm4ld16m3Hz1ixNFbJ0" />
+
+  <title>Spectral-GS: Taming 3D Gaussian Splatting with Spectral Entropy</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/spectralgs-icon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+
+  <script>
+    function openDemo(demoName) {
+      window.location = '/demo/assets/gs/' + demoName + '.html';
+    }
+    function openMipDemo(demoName) {
+      window.location = 'https://niujinshuchong.github.io/mip-splatting-demo/' + demoName + '.html';
+    }
+    function openAnaDemo(demoName) {
+      window.location = 'https://lzhnb.github.io/project-pages/analytic-splatting-demo/' + demoName + '.html';
+    }
+  </script>
+</head>
+
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://letianhuang.github.io/spectralgs/">
+          <span class="icon">
+            <i class="fas fa-home"></i>
+          </span>
+        </a>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://letianhuang.github.io/glossygs/">
+              GlossyGS: Inverse Rendering of Glossy Objects with 3D Gaussian Splatting
+            </a>
+            <a class="navbar-item" href="https://letianhuang.github.io/op43dgs/">
+              On the Error Analysis of 3D Gaussian Splatting and an Optimal Projection Strategy
+            </a>
+            <a class="navbar-item" href="https://letianhuang.github.io/transparentgs/">
+              TransparentGS: Fast Inverse Rendering of Transparent Objects with Gaussians
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">Spectral-GS: Taming 3D Gaussian Splatting <br> with Spectral Entropy</h1>
+            <h1 style="font-size:1.5rem"> SIGGRAPH Asia 2025 (Conference Track) </h1>
+            <br>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://letianhuang.github.io/">Letian Huang</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en">Jie Guo</a><sup>*
+                  1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://orcid.org/0009-0007-2228-4648">Jialin Dan</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://orcid.org/0009-0008-0557-4384">Ruoyu Fu</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="http://www.njumeta.com/liyq/">Yuanqi Li</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+              <span class="author-block">
+                <a href="https://cs.nju.edu.cn/ywguo/index.htm">Yanwen Guo</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </span>
+            </div>
+
+
+            <div class="is-size-5 publication-authors">
+              <sup>*</sup> Corresponding author
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">State Key Lab for Novel Software Technology, Nanjing University</span><br>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="https://dl.acm.org/doi/10.1145/3757377.3763907"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/assets/pdf/SpectralGS.pdf"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>Author Version</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="https://letianhuang.github.io/assets/pdf/SpectralGS_supple.pdf"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>Supple</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="./demo/index.html"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fab fa-dribbble"></i>
+                    </span>
+                    <span>Viewer</span>
+                    </a>
+                </span>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            Recently, 3D Gaussian Splatting (3DGS) has achieved impressive results in novel view synthesis, demonstrating high fidelity and efficiency. However, it easily exhibits needle-like artifacts, especially when increasing the sampling rate. Mip-Splatting tries to remove these artifacts with a 3D smoothing filter for frequency constraints and a 2D Mip filter for approximated supersampling. Unfortunately, it tends to produce over-blurred results, and sometimes needle-like Gaussians still persist. Our spectral analysis of the covariance matrix during optimization and densification reveals that current 3DGS lacks shape awareness, relying instead on spectral radius and view positional gradients to determine splitting. As a result, needle-like Gaussians with small positional gradients and low spectral entropy fail to split and overfit high-frequency details. Furthermore, both the filters used in 3DGS and Mip-Splatting reduce the spectral entropy and increase the condition number during zooming in to synthesize novel view, causing view inconsistencies and more pronounced artifacts. Our Spectral-GS, based on spectral analysis, introduces 3D shape-aware splitting and 2D view-consistent filtering strategies, effectively addressing these issues, enhancing 3DGS's capability to represent high-frequency details without noticeable artifacts, and achieving high-quality realistic rendering.
+          </div>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Video</h2>
+          <div class="content has-text-justified">
+            <video poster="" id="sciart" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/spectralgs.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+          <div class="content has-text-justified"> The images are ordered from left to right,
+corresponding to the transition from the training focal length to larger focal lengths (zoom in). These methods produce nearly identical novel
+view synthesis results at the training view’s focal length. However,
+when the focal length and sampling rate increase, 3DGS and Mip-Splatting suffer
+from severe needle-like artifacts, leading to a notable decline in
+rendering quality.
+          </div>
+          <div class="columns is-centered">
+            <div class="column">
+              <div class="columns is-centered">
+                <div class="column content">
+                  <img src="./static/images/spectralgs_teaser.png" width=100%>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Method</h2>
+      <div class="content has-text-justified">
+        <p>
+          Overview of Spectral-GS. 3D Gaussian Splatting (3DGS) [Kerbl et al. 2023] decides whether to split based on the positional gradients and the spectral
+radius of the covariance matrix without considering the shape of primitives. We propose the 3D shape-aware splitting strategy based on the spectral analysis
+(3D Split). In screen space, both the EWA filter [Zwicker et al. 2002] of 3DGS which attempts to cover an entire pixel, and the Mip filter of Mip-Splatting [Yu
+et al. 2024] which approximates supersampling, result in a reduction of spectral entropy when zooming in to synthesize novel view. Our view-consistent filter’s
+kernel is not constant to maintain the spectral entropy consistency (2D Filter).
+        </p>
+        <img src="./static/images/exp/pipeline.png">
+      </div>
+    </div>
+  </section>
+
+    <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Motivation</h2>
+      <div class="content has-text-justified">
+        <p>
+          The condition number and spectral entropy can be used to measure the shape or degree of anisotropy of the Gaussian. 
+          <br>
+          1. Loss-sensitivity and shape-unawareness in densification.
+          2. View-inconsistency in filtering.
+        </p>
+        <img src="./static/images/exp/motivation.png">
+      </div>
+    </div>
+  </section>
+
+    <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Comparisons</h2>
+      <div class="content has-text-justified">
+        <p>
+            Qualitative comparisons on the synthetic scenes and real scenes. Differences in quality highlighted by insets. We visualize the spectral entropy maps of 3D Gaussians. Bluer regions indicate lower spectral entropy, with more needle-like degraded Gaussians, while greener regions represent higher spectral entropy.
+        </p>
+        <img src="./static/images/exp/cmp.png">
+      </div>
+    </div>
+  </section>
+
+    <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Real-Time Interactive Viewer</h2>
+      <div class="content has-text-justified">
+        <p>
+            Click the image to use the real-time interactive viewer.
+        </p>
+        <div class="columns is-centered">
+          <div class="demo-scene-panel" onclick="openDemo('chair')">
+            <img src="/demo/assets/images/chair.png" class="demo-scene-panel-image">
+            <span class="small-title">chair</span>
+          </div>
+
+          <div class="demo-scene-panel" onclick="openMipDemo('chair')">
+            <img src="/demo/assets/images/chair.png" class="demo-scene-panel-image">
+            <span class="small-title">chair Mip-Splatting</span>
+          </div>
+
+          <div class="demo-scene-panel" onclick="openAnaDemo('chair')">
+            <img src="/demo/assets/images/chair.png" class="demo-scene-panel-image">
+            <span class="small-title">chair Analytic-Splatting</span>
+          </div>
+        
+        </div>
+          <br>
+          <div class="columns is-centered">
+          <div class="demo-scene-panel" onclick="openDemo('hotdog')">
+            <img src="/demo/assets/images/hotdog.png" class="demo-scene-panel-image">
+            <span class="small-title">hotdog</span>
+          </div>
+
+
+
+          <div class="demo-scene-panel" onclick="openMipDemo('hotdog')">
+            <img src="/demo/assets/images/hotdog.png" class="demo-scene-panel-image">
+            <span class="small-title">hotdog Mip-Splatting</span>
+          </div>
+
+          <div class="demo-scene-panel" onclick="openAnaDemo('hotdog')">
+            <img src="/demo/assets/images/hotdog.png" class="demo-scene-panel-image">
+            <span class="small-title">hotdog Analytic-Splatting</span>
+          </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Visual Comparisons</h2>
+      <div class="content has-text-justified">
+        <p>
+
+        </p>
+      </div>
+      <div class="columns is-centered">
+        <!-- Visual Effects. -->
+        <div class="column">
+          <div class="content">
+            <div class="columns is-centered">
+              <div class="column is-full-width">
+
+                <img src="./static/images/exp/vis_cmp/lego.png">
+
+                <div id="example9" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/lego_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+  
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/lego_3dgs.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        3DGS [Kerbl et al. 2023]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example10" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/lego_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/lego_mip.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Mip-Splatting [Yu et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example11" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/lego_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/lego_ana.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Analytic-Splatting [Liang et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example12" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/lego_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/lego_gt.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Ground-truth
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <br>
+                
+                <img src="./static/images/exp/vis_cmp/drjohnson.png">
+
+                <div id="example1" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/drjohnson_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+  
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/drjohnson_3dgs.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        3DGS [Kerbl et al. 2023]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example2" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/drjohnson_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/drjohnson_mip.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Mip-Splatting [Yu et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example3" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/drjohnson_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/drjohnson_pixel.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Pixel-GS [Zhang et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example4" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/drjohnson_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/drjohnson_gt.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Ground-truth
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--/ Visual Effects. -->
+
+        <!-- Matting. -->
+        <div class="column">
+          <div class="columns is-centered">
+            <div class="column content">
+                <img src="./static/images/exp/vis_cmp/hotdog.png">
+
+                <div id="example13" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/hotdog_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+  
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/hotdog_3dgs.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        3DGS [Kerbl et al. 2023]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example14" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/hotdog_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/hotdog_mip.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Mip-Splatting [Yu et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example15" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/hotdog_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/hotdog_ana.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Analytic-Splatting [Liang et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example16" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/hotdog_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/hotdog_gt.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Ground-truth
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+                
+                <br>
+
+                <img src="./static/images/exp/vis_cmp/truck.png">
+
+                <div id="example5" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/truck_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+  
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/truck_3dgs.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        3DGS [Kerbl et al. 2023]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example6" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/truck_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/truck_mip.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Mip-Splatting [Yu et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example7" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/truck_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/truck_pixel.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Pixel-GS [Zhang et al. 2024]
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+                <div id="example8" class="bal-container-small">
+
+                  <div class="bal-after">
+                    <img src="./static/images/exp/vis_cmp/truck_ours.png">
+                    <div class="bal-afterPosition afterLabel">
+                      Ours
+                    </div>
+                  </div>
+
+                  <div class="bal-before">
+                    <div class="bal-before-inset">
+                      <img src="./static/images/exp/vis_cmp/truck_gt.png">
+                      <div class="bal-beforePosition beforeLabel">
+                        Ground-truth
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bal-handle">
+                    <span class=" handle-left-arrow"></span>
+                    <span class="handle-right-arrow"></span>
+                  </div>
+
+                </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@inproceedings{spectralgs,
+    author = {Huang, Letian and Guo, Jie and Dan, Jialin and Fu, Ruoyu and Li, Yuanqi and Guo, Yanwen},
+    title = {Spectral-GS: Taming 3D Gaussian Splatting with Spectral Entropy},
+    year = {2025},
+    isbn = {9798400721373},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3757377.3763907},
+    doi = {10.1145/3757377.3763907},
+    booktitle = {Proceedings of the SIGGRAPH Asia 2025 Conference Papers},
+    series = {SA Conference Papers '25}
+}</code></pre>
+      <!--
+    <pre><code>@article{kopanas2022neural,
+      title={Neural Point Catacaustics for Novel-View Synthesis of Reflections},
+      author={Kopanas, Georgios and Leimk{\"u}hler, Thomas and Rainer, Gilles and Jambon, Cl{\'e}ment and Drettakis, George},
+      journal={ACM Transactions on Graphics},
+      volume={41},
+      number={6},
+      pages={Article--201},
+      year={2022}
+    }</code></pre>-->
+    </div>
+  </section>
+
+  
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3">Acknowledgments and Funding</h2>
+      <p>
+        The authors would like to thank the anonymous reviewers for their
+        valuable feedback. This work was supported by the National Natural
+        Science Foundation of China (No. 61972194 and No. 62032011) and
+        the Natural Science Foundation of Jiangsu Province (No. BK20211147).
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">References</h2>
+
+          <div class="content has-text-justified">
+            <ul>
+              <li>
+                <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank">[Kerbl et al. 2023] 3D Gaussian Splatting for Real-Time Radiance Field Rendering. SIGGRAPH 2023 (ACM Transactions on Graphics)</a>
+              </li>
+              <li>
+                <a href="https://niujinshuchong.github.io/mip-splatting/" target="_blank">[Yu et al. 2024] Mip-Splatting: Alias-free 3D Gaussian Splatting. CVPR 2024</a>
+              </li>
+              <li>
+                <a href="https://r4dl.github.io/StopThePop/" target="_blank">[Radl et al. 2024] StopThePop: Sorted Gaussian Splatting for View-Consistent Real-time Rendering. SIGGRAPH 2024 (ACM Transactions on Graphics)</a>
+              </li>
+              <li>
+                <a href="https://letianhuang.github.io/op43dgs/" target="_blank">[Huang et al. 2024] On the Error Analysis of 3D Gaussian Splatting and an Optimal Projection Strategy. ECCV 2024</a>
+              </li>
+              <li>
+                <a href="https://lzhnb.github.io/project-pages/analytic-splatting/" target="_blank">[Liang et al. 2024] Analytic-Splatting: Anti-Aliased 3D Gaussian Splatting via Analytic Integration. ECCV 2024</a>
+              </li>
+              <li>
+                <a href="https://pixelgs.github.io/" target="_blank">[Zhang et al. 2024] Pixel-GS: Density Control with Pixel-aware Gradient for 3D Gaussian Splatting. ECCV 2024</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!--/ Concurrent Work. -->
+    </div>
+  </section>
+
+
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="http://www-sop.inria.fr/reves/Basilic/2021/KPLD21/">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="#top" class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              We thank the authors of <a href="https://nerfies.github.io/">Nerfies</a> that kindly open sourced the
+              template of this website.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="static/js/script.js"></script>
+
+  <script>
+    new BeforeAfter({
+      id: '#example1'
+    });
+    new BeforeAfter({
+      id: '#example2'
+    });
+    new BeforeAfter({
+      id: '#example3'
+    });
+    new BeforeAfter({
+      id: '#example4'
+    });
+    new BeforeAfter({
+      id: '#example5'
+    });
+    new BeforeAfter({
+      id: '#example6'
+    });
+    new BeforeAfter({
+      id: '#example7'
+    });
+    new BeforeAfter({
+      id: '#example8'
+    });
+    new BeforeAfter({
+      id: '#example9'
+    });
+    new BeforeAfter({
+      id: '#example10'
+    });
+    new BeforeAfter({
+      id: '#example11'
+    });
+    new BeforeAfter({
+      id: '#example12'
+    });
+    new BeforeAfter({
+      id: '#example13'
+    });
+    new BeforeAfter({
+      id: '#example14'
+    });
+    new BeforeAfter({
+      id: '#example15'
+    });
+    new BeforeAfter({
+      id: '#example16'
+    });
+  </script>
+
+</body>
+
+</html>
