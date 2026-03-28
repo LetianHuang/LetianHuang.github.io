@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>南京大学仙林校区 | NJU Xianlin Campus</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="icon" sizes="192x192" href="https://www.nju.edu.cn/images/favicon.png">
+
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="text/javascript" src="enable-threads.js"></script>
+
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js",
+            "gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000; font-family: sans-serif; }
+
+    /* 菜单 */
+    #hotspot-menu-container { position: absolute; top: 20px; left: 20px; z-index: 10; }
+    .hotspot-menu-button { background-color: #6F287F; color: white; padding: 15px 24px; border-radius: 30px; border: none; cursor: pointer; font-size: 21px; display: flex; align-items: center; gap: 9px; }
+    .hotspot-menu-panel { display: none; margin-top: 15px; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 3px 18px rgba(0,0,0,0.3); width: 380px; }
+    .hotspot-menu-panel.show { display: block; }
+    .hotspot-menu-close { background: none; border: none; font-size: 24px; float: right; cursor: pointer; }
+    .hotspot-menu-title { font-weight: bold; font-size: 18px; margin-bottom: 12px; }
+    .hotspot-item { padding: 12px 9px; cursor: pointer; border-radius: 6px; }
+    .hotspot-item:hover { background: #eee; }
+    .hotspot-name { font-weight: 500; }
+    .hotspot-description { font-size: 18px; color: #555; }
+
+    /* 右上角小图 + 文字容器 */
+    #top-right-map-container { position: fixed; top: 20px; right: 20px; text-align: center; z-index: 20; cursor: pointer; }
+    #top-right-map { width: 240px; height: auto; border: 2px solid #fff; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); display: block; margin: 0 auto; transition: all 0.3s ease; }
+    #top-right-map-label { color: white; font-size: 16px; margin-top: 6px; text-shadow: 0 0 3px black; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <!-- 菜单 -->
+  <div id="hotspot-menu-container">
+<button class="hotspot-menu-button" id="mainBtn">
+  <img src="https://www.nju.edu.cn/images/logo.png" alt="logo" height="35px">📍 校园导览 | Campus Guide
+</button>
+<div class="hotspot-menu-panel" id="subMenu">
+  <button class="hotspot-menu-close" id="closeBtn">✕</button>
+  <div class="hotspot-menu-title">📍 快速导航 | Navigation</div>
+
+  <div class="hotspot-item" data-id="1">
+    <div class="hotspot-name">杜厦图书馆 | Duxia Library</div>
+    <div class="hotspot-description">查看图书馆的俯视景观 <br> Aerial view of the Library</div>
+  </div>
+
+  <div class="hotspot-item" data-id="2">
+    <div class="hotspot-name">南门 | South Gate</div>
+    <div class="hotspot-description">查看南门的景观 <br> Scenery of the South Gate</div>
+  </div>
+
+  <div class="hotspot-item" data-id="3">
+    <div class="hotspot-name">菜根谭快递站 | Caigentan Delivery Station</div>
+    <div class="hotspot-description">查看菜根谭的详细景观 <br> Detailed view of Delivery Station</div>
+  </div>
+
+  <div class="hotspot-item" data-id="4">
+    <div class="hotspot-name">方肇州体育馆 | Fang Zhaozhou Gymnasium</div>
+    <div class="hotspot-description">查看体育馆的详细景观 <br> Detailed view of the Gymnasium</div>
+  </div>
+</div>
+  </div>
+
+  <!-- 右上角小图 + 文字 -->
+  <div id="top-right-map-container">
+    <img id="top-right-map" src="./assets/map/nju_xianlincampus.jpg" alt="Campus Map">
+    <div id="top-right-map-label"> 三维重建: 南京大学仙林校区<br> 3DGS: Nanjing University (Xianlin Campus) </div>
+  </div>
+
+  <!-- 3DGS Viewer -->
+  <script type="module">
+    import * as GaussianSplats3D from 'gaussian-splats-3d';
+    import * as THREE from 'three';
+
+    const viewer = new GaussianSplats3D.Viewer({
+      cameraUp: [0,1,0],
+      initialCameraPosition: [4,2,6.5],
+      initialCameraLookAt: [2,-1,-1.5],
+      halfPrecisionCovariancesOnGPU: true
+    });
+
+    const path = 'https://huggingface.co/datasets/mofashaoye/3dgs/resolve/main/nju_xianlincampus.ply';
+    const texturePath = './assets/environment/cloudy_puresky.jpg';
+    const loadPLY = viewer.loadFile(path);
+    const loadTexture = new Promise((resolve, reject) => new THREE.TextureLoader().load(texturePath, resolve, undefined, reject));
+
+    let planeMeshRef = null;
+    let planeAtTop = false; // 当前是否在 y=4
+
+    Promise.all([loadPLY, loadTexture]).then(([plyResult, texture]) => {
+      // 天空球
+      const skyGeo = new THREE.SphereGeometry(200,64,64);
+      const skyMat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+      viewer.scene.add(new THREE.Mesh(skyGeo, skyMat));
+
+      // 图片平面
+      new THREE.TextureLoader().load('./assets/map/nju_xianlincampus.jpg', tex => {
+        const img = tex.image;
+        const aspect = img.width / img.height;
+        const height = 40;
+        const width = aspect * height;
+
+        planeMeshRef = new THREE.Mesh(
+          new THREE.PlaneGeometry(width, height),
+          new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide })
+        );
+        planeMeshRef.position.set(-1, -4, -9); // 初始位置 y = -4
+        planeMeshRef.rotation.x = -Math.PI / 2;
+
+        viewer.scene.add(planeMeshRef);
+      });
+
+      viewer.start();
+    }).catch(err => console.error("加载出错:", err));
+
+    // 菜单交互
+    document.getElementById("mainBtn").onclick = () => document.getElementById("subMenu").classList.toggle("show");
+    document.getElementById("closeBtn").onclick = () => document.getElementById("subMenu").classList.remove("show");
+
+    // 相机视角动画
+    const views = {
+      1: { position: [2,1,-2], target: [2,0,-2] },
+      2: { position: [4,2,6.5], target: [2,-1,4] },
+      3: { position: [-3,0.5,-0.5], target: [-3,0,-1] },
+      4: { position: [-3,1,-2.5], target: [-3,0,-1.5] }
+    };
+
+    let isCameraAnimating = false;
+
+    function animateCamera(toPos, toTarget, duration = 1500) {
+      if (isCameraAnimating) return;
+      isCameraAnimating = true;
+
+      const fromPos = viewer.camera.position.clone();
+      const fromTarget = viewer.controls.target.clone();
+      const targetPos = new THREE.Vector3(...toPos);
+      const targetLook = new THREE.Vector3(...toTarget);
+
+      const startTime = performance.now();
+
+      function smootherStep(t) { return t*t*t*(t*(6*t-15)+10); }
+
+      function update() {
+        const elapsed = performance.now() - startTime;
+        const t = Math.min(1, elapsed / duration);
+        const tEase = smootherStep(t);
+
+        viewer.camera.position.lerpVectors(fromPos, targetPos, tEase);
+        viewer.controls.target.lerpVectors(fromTarget, targetLook, tEase);
+        viewer.controls.update();
+
+        if (t < 1) {
+          requestAnimationFrame(update);
+        } else {
+          isCameraAnimating = false;
+        }
+      }
+
+      update();
+    }
+
+    document.querySelectorAll(".hotspot-item").forEach(item => {
+      item.onclick = () => {
+        const id = item.dataset.id;
+        animateCamera(views[id].position, views[id].target);
+      };
+    });
+
+    // 点击右上角小图容器 -> planeMesh y轴在 -4 和 -0.5 之间切换
+    document.getElementById("top-right-map-container").onclick = () => {
+      if (!planeMeshRef) return;
+      const fromY = planeMeshRef.position.y;
+      const toY = planeAtTop ? -4 : -0.5; // 切换目标
+      planeAtTop = !planeAtTop;
+
+      const duration = 1000;
+      const startTime = performance.now();
+
+      function animate() {
+        const t = Math.min(1, (performance.now() - startTime) / duration);
+        planeMeshRef.position.y = fromY + (toY - fromY) * t;
+        if (t < 1) requestAnimationFrame(animate);
+      }
+      animate();
+    };
+  </script>
+
+</body>
+</html>
