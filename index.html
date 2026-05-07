@@ -256,12 +256,12 @@
                                             <!-- <abbr class="badge"><a href="https://cvpr.thecvf.com/Conferences/2024" rel="external nofollow noopener" target="_blank">CVPR</a></abbr>  -->
                                             <img src="/assets/img/gsreuse.png" data-zoomable
                                                 class="img-fluid z-depth-1 rounded" width="100%" height="auto"
-                                                alt="SpectralGS"
+                                                alt="GSReuse"
                                                 onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
                                         </picture>
                                     </figure>
                                 </div>
-                                <div id="spectral_gs" class="col-sm-9">
+                                <div id="gs_reuse" class="col-sm-9">
                                     <div class="title"><strong>GSReuse: Temporally Adaptive Screen-Space Reuse for Accelerating 3D Gaussian Splatting</strong></div>
                                     <div class="author">
                                         <a href="https://orcid.org/0000-0002-0736-7951" rel="external nofollow noopener"
@@ -289,11 +289,25 @@
                                     <div class="links">
                                         <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
                                         <a class="bibtex btn btn-sm z-depth-0" role="button">Bib</a>
+                                        <a href="https://letianhuang.github.io/assets/pdf/GSReuse.pdf" rel="external nofollow noopener" target="_blank" class="btn btn-sm z-depth-0" role="button">Author Version</a> 
+                                        <a href='https://doi.org/10.1109/TVCG.2026.3679889'> <img
+                                                src='https://img.shields.io/badge/DOI-10.1109%2FTVCG.2026.3679889-blue'></a>
                                     </div>
                                     <div class="bibtex hidden">
                                         <figure class="highlight">
                                             <pre>
-                                                    <code class="language-bibtex" data-lang="bibtex">Coming soon...
+                                                    <code class="language-bibtex" data-lang="bibtex">
+@article{gsreuse,
+    author={Tao, Chengzhi and Sun, Yiyang and Guo, Jie and Zhang, Tao and Huang, Letian and Zhu, Junqiu and Wang, Daoheng and Guo, Yanwen},
+    journal={IEEE Transactions on Visualization and Computer Graphics}, 
+    title={GSReuse: Temporally Adaptive Screen-Space Reuse for Accelerating 3D Gaussian Splatting}, 
+    year={2026},
+    volume={},
+    number={},
+    pages={1-11},
+    keywords={Filtering;Filters;Anisotropic;Circuits and systems;Pixel;Videos;Electronic mail;Graphical user interfaces;Mobile handsets;Video equipment;Rendering;Gaussian splatting;acceleration},
+    doi={10.1109/TVCG.2026.3679889}
+}
 </code></pre>
                                         </figure>
                                     </div>
@@ -310,7 +324,7 @@ current frame, GSReuse estimates reliable Gaussian splatting motion vectors for 
 view. A tile-based filtering and masking strategy is then applied to determine which regions can be safely reused, allowing the 3DGS
 renderer to skip redundant rendering operations. We evaluate GSReuse on multiple benchmark datasets, showing that GSReuse
 significantly improves rendering, while maintaining high visual fidelity. Compared to state-of-the-art video frame reuse/generation
-methods, GSReuse delivers better image quality with much lower latency., facilitating practical deployment of 3DGS in VR applications.</p>
+methods, GSReuse delivers better image quality with much lower latency, facilitating practical deployment of 3DGS in VR applications.</p>
                                     </div>
                                 </div>
 
